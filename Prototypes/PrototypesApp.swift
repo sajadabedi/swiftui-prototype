@@ -11,11 +11,7 @@ import SwiftUI
 struct PrototypesApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(
-                    \.font,
-                     Font.system(.title, design: .rounded)
-                )
+            RippleShaderEffectView()
         }
     }
 }
