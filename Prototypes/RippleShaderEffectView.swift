@@ -9,7 +9,7 @@ struct RippleShaderEffectView: View {
         TimelineView(.animation) { timeline in
             Image("macy")
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFill()
                 .frame(width: 300, height: 300)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .modifier(RippleEffect(at: origin, trigger: counter))
