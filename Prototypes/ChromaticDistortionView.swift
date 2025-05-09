@@ -21,7 +21,7 @@ struct ChromaticDistortionEffect: ViewModifier {
 }
 
 struct ChromaticDistortionView: View {
-    @State private var parameters = ChromaticDistortionParameters(origin: .zero, intensity: 1.0)
+    @State private var parameters = ChromaticDistortionParameters(origin: .zero, intensity: 2.0)
 
     var body: some View {
         Image("macy")

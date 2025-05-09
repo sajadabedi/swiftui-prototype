@@ -12,17 +12,24 @@ struct ShimmerEffectView: View {
     var body: some View {
         ZStack {
             Text("Get Started")
-                .font(.headline)
-                .foregroundStyle(.gray.opacity(0.2))
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.3))
             Text("Get Started")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
                 .textRenderer(ShimmerEffect(animationProgress: MoveFrom ? 3 : -1))
         }
-        .frame(height: 55)
+        .frame(height: 60)
         .frame(maxWidth: .infinity)
         
-        .background(.gray.tertiary, in:Capsule())
+        .background(LinearGradient(
+            stops: [
+                Gradient.Stop(color: Color(red: 0.99, green: 0.45, blue: 0.17), location: 0.00),
+                Gradient.Stop(color: Color(red: 0.99, green: 0.17, blue: 0.66), location: 1.00),
+            ],
+            startPoint: UnitPoint(x: 0.45, y: 1),
+            endPoint: UnitPoint(x: 0.47, y: -0.90)
+        ), in:Capsule())
         .padding()
         .onAppear() {
             withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
