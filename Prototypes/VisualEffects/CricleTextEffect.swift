@@ -11,7 +11,7 @@ struct CircleLabelView: View {
     var radius: Double
     var text: String
     var kerning: CGFloat = 4
-    var size: CGSize = .init(width: 300, height: 300)
+    var size: CGSize = .init(width: 200, height: 200)
     @State var textWidths: [Int:Double] = [:]
     
     var texts: [(offset: Int, element: Character)] {

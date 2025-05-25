@@ -11,6 +11,7 @@ struct SectionHeading: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.largeTitle)
+            .fontDesign(.rounded)
             .bold()
     }
 }
