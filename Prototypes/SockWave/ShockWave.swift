@@ -21,7 +21,6 @@ fileprivate enum CellAnimationPhase: CaseIterable {
         case .expand:
             return 0.2
         }
-        
     }
     
     var brightnessAdjustment: Double {

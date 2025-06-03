@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct PrototypesApp: App {
+    let model = TodoList()
     var body: some Scene {
         WindowGroup {
-            RippleShaderEffectView()
+            TodoListView()
+                .environment(model)
         }
     }
 }
