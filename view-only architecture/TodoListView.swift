@@ -14,13 +14,8 @@ struct TodoListView: View {
         NavigationStack {
             List {
                 ForEach(model.todos) { todo in
-                    HStack {
-                        Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
-                            .onTapGesture {
-                                model.toggle(todo)
-                            }
-                        Text(todo.title)
-                            .strikethrough(todo.isDone)
+                    TodoRowView(todo: todo) {
+                        model.toggle(todo)
                     }
                 }
             }
@@ -38,6 +33,21 @@ struct TodoListView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+struct TodoRowView: View {
+    let todo: TodoItem
+    let onToggle: () -> Void
+    var body: some View {
+        HStack {
+            Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
+                .onTapGesture {
+                    onToggle()
+                }
+            Text(todo.title)
+                .strikethrough(todo.isDone)
         }
     }
 }
