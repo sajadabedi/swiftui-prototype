@@ -21,6 +21,11 @@
 			path = "view-only architecture";
 			sourceTree = "<group>";
 		};
+		B4CDEE632E0C3D7200E3CE4F /* Extension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Extension;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +45,7 @@
 				B4674A6F2D09C19C008FE0B1 /* Prototypes */,
 				B4674A6E2D09C19C008FE0B1 /* Products */,
 				B4998A822DEEFE40006BAA73 /* view-only architecture */,
+				B4CDEE632E0C3D7200E3CE4F /* Extension */,
 			);
 			sourceTree = "<group>";
 		};
@@ -69,6 +75,7 @@
 			fileSystemSynchronizedGroups = (
 				B4674A6F2D09C19C008FE0B1 /* Prototypes */,
 				B4998A822DEEFE40006BAA73 /* view-only architecture */,
+				B4CDEE632E0C3D7200E3CE4F /* Extension */,
 			);
 			name = Prototypes;
 			packageProductDependencies = (
