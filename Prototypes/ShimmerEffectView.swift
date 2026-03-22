@@ -20,7 +20,7 @@ struct ShimmerEffectView: View {
                 .textRenderer(ShimmerEffect(animationProgress: MoveFrom ? 3 : -1))
         }
         .frame(height: 60)
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 32)
         
         .background(LinearGradient(
             stops: [
