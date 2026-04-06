@@ -13,7 +13,7 @@ public struct SpinnerConfig {
     public var segmentCount:   UInt32 = 80_000
     public var loops:          Float  = 6.0
     public var tinyLoopAmount: Float  = 1.5
-    public var trailLength:    Float  = 0.28
+    public var trailLength:    Float  = 0.7
 
     public var colorMode: ColorMode = .rainbow
     public var customColor: SIMD4<Float> = SIMD4(1, 0.6, 0.2, 1)
@@ -22,6 +22,7 @@ public struct SpinnerConfig {
         case rainbow = 0
         case white   = 1
         case custom  = 2
+        case saffron = 3
     }
 
     public init() {}
@@ -172,24 +173,23 @@ final class SpinnerRenderer: NSObject, MTKViewDelegate {
 
 #Preview("Gradient Path") {
     ZStack {
-        Color.white.ignoresSafeArea()
         SpinnerView(config: {
             var c = SpinnerConfig()
             c.colorMode  = .rainbow
-            c.strokeWidth = 5
+            c.strokeWidth = 6
             return c
         }())
-        .frame(width: 60, height: 60)
+        .frame(width: 200, height: 200)
     }
 }
 
-#Preview("Custom Color") {
+#Preview("Saffron") {
     ZStack {
-        Color(red: 0.08, green: 0.06, blue: 0.04).ignoresSafeArea()
+//        Color(red: 0.06, green: 0.05, blue: 0.04).ignoresSafeArea()
         SpinnerView(config: {
             var c = SpinnerConfig()
-            c.colorMode   = .custom
-            c.customColor = SIMD4(1.0, 0.65, 0.1, 1.0)
+            c.colorMode = .saffron
+            c.strokeWidth = 5
             return c
         }())
         .frame(width: 200, height: 200)

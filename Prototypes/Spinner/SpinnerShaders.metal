@@ -10,7 +10,6 @@ constant float PI2 = 6.28318530717958647692;
 
 // MARK: - Spirograph curve
 
-// Compute a point on the spirograph at a given progress [0..1]
 float2 spirographPoint(float progress, float loops, float tinyLoopAmount) {
     float margin      = 0.2;
     float detailScale = 0.7;
@@ -23,7 +22,6 @@ float2 spirographPoint(float progress, float loops, float tinyLoopAmount) {
     );
 }
 
-// Max possible radius of the spirograph (for auto-fitting inside NDC)
 float spirographMaxRadius(float loops, float tinyLoopAmount, float strokeWidth) {
     float margin      = 0.2;
     float detailScale = 0.7;
@@ -41,6 +39,19 @@ float3 hsv2rgb(float h, float s, float v) {
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
+// Saffron gradient: red (tail) → hot orange (mid) → yellow-orange (head)
+float3 saffronColor(float glow) {
+    float3 red          = float3(0.85, 0.10, 0.02);
+    float3 hotOrange    = float3(1.00, 0.45, 0.05);
+    float3 yellowOrange = float3(1.00, 0.78, 0.10);
+
+    if (glow < 0.5) {
+        return mix(red, hotOrange, glow * 2.0);
+    } else {
+        return mix(hotOrange, yellowOrange, (glow - 0.5) * 2.0);
+    }
+}
+
 // MARK: - GPU config (must match Swift-side GPUConfig layout)
 
 struct Config {
@@ -50,7 +61,7 @@ struct Config {
     float  loops;
     float  tinyLoopAmount;
     float  trailLength;
-    uint   colorMode;       // 0 = rainbow, 1 = white, 2 = custom
+    uint   colorMode;       // 0 = rainbow, 1 = white, 2 = custom, 3 = saffron
     float4 customColor;
     float  aspectRatio;
 };
@@ -60,7 +71,7 @@ struct Config {
 struct VertexOut {
     float4 position [[position]];
     float4 color;
-    float  edgeDist; // -1..1 across ribbon width (for anti-aliasing)
+    float  edgeDist;
 };
 
 vertex VertexOut spinner_vertex(
@@ -69,7 +80,6 @@ vertex VertexOut spinner_vertex(
 {
     VertexOut out;
 
-    // Two vertices per segment (left & right edge of the ribbon)
     uint segIdx = vid / 2;
     uint side   = vid % 2;
 
@@ -94,41 +104,43 @@ vertex VertexOut spinner_vertex(
     bool  inTrail   = dist <= cfg.trailLength;
     float glow      = inTrail ? (1.0 - dist / cfg.trailLength) : 0.0;
 
-    // Rounded caps — taper ribbon width to zero at head & tail
+    // Rounded cap at the head only — tail fades out naturally via glow
     float capLen   = 0.012;
     float capTaper = 1.0;
     if (inTrail) {
-        capTaper  = smoothstep(0.0, capLen, dist);
-        capTaper  = min(capTaper, smoothstep(cfg.trailLength, cfg.trailLength - capLen, dist));
+        capTaper = smoothstep(0.0, capLen, dist);
     }
 
     // Final position
     float sideSign = (side == 0) ? -1.0 : 1.0;
-    float2 pos = p0 + normal * sideSign * halfW * capTaper;
+    float2 pos = p0 + normal * sideSign * halfW;
     pos *= scale;
     pos.x /= cfg.aspectRatio;
 
-    // Depth: trail head is nearest (z=0), tail is farthest (z→1)
-    // Segments outside the trail are pushed to the back
+    // Depth: trail head nearest (z≈0), tail farthest; background at z=1
     float depth = inTrail ? (dist / cfg.trailLength) : 1.0;
 
     out.position = float4(pos, depth, 1.0);
-    out.edgeDist = sideSign * capTaper;
+    out.edgeDist = sideSign;
 
     // Color
-    float3 rgb;
-    if (cfg.colorMode == 0) {
-        float hue = fmod(progress + cfg.time * 0.08, 1.0);
-        rgb = hsv2rgb(hue, 0.9, 1.0);
-    } else if (cfg.colorMode == 1) {
-        rgb = float3(1.0);
+    if (inTrail) {
+        float3 rgb;
+        if (cfg.colorMode == 0) {
+            float hue = fmod(progress + cfg.time * 0.08, 1.0);
+            rgb = hsv2rgb(hue, 0.9, 1.0);
+        } else if (cfg.colorMode == 1) {
+            rgb = float3(1.0);
+        } else if (cfg.colorMode == 3) {
+            rgb = saffronColor(glow);
+        } else {
+            rgb = cfg.customColor.rgb;
+        }
+        out.color = float4(rgb, glow * capTaper);
     } else {
-        rgb = cfg.customColor.rgb;
+        // Static gray background curve (full shape always visible)
+        out.color = float4(float3(0.78), 1.0);
     }
-
-    // Only trail segments are visible; smooth gradient from head (bright) to tail (fades out)
-    float alpha = inTrail ? glow : 0.0;
-    out.color = float4(rgb, alpha);
 
     return out;
 }
