@@ -179,19 +179,18 @@ final class SpinnerRenderer: NSObject, MTKViewDelegate {
             c.strokeWidth = 6
             return c
         }())
-        .frame(width: 200, height: 200)
+        .frame(width: 100, height: 100)
     }
 }
 
 #Preview("Saffron") {
     ZStack {
-//        Color(red: 0.06, green: 0.05, blue: 0.04).ignoresSafeArea()
         SpinnerView(config: {
             var c = SpinnerConfig()
             c.colorMode = .saffron
-            c.strokeWidth = 5
+            c.strokeWidth = 7
             return c
         }())
-        .frame(width: 200, height: 200)
+        .frame(width: 100, height: 100)
     }
 }

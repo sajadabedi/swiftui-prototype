@@ -39,16 +39,24 @@ float3 hsv2rgb(float h, float s, float v) {
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-// Saffron gradient: red (tail) → hot orange (mid) → yellow-orange (head)
-float3 saffronColor(float glow) {
-    float3 red          = float3(0.85, 0.10, 0.02);
-    float3 hotOrange    = float3(1.00, 0.45, 0.05);
-    float3 yellowOrange = float3(1.00, 0.78, 0.10);
+// Saffron gradient: orange → yellow → orange → red, cycling along the curve
+float3 saffronColor(float progress, float time) {
+    float3 orange     = float3(1.00, 0.50, 0.05);
+    float3 yellow     = float3(1.00, 0.82, 0.12);
+    float3 deepOrange = float3(0.95, 0.35, 0.04);
+    float3 red        = float3(0.85, 0.12, 0.02);
 
-    if (glow < 0.5) {
-        return mix(red, hotOrange, glow * 2.0);
+    float t = fmod(progress - time * 0.08 + 100.0, 1.0);
+    t *= 4.0; // 4 color stops
+
+    if (t < 1.0) {
+        return mix(orange, yellow, t);
+    } else if (t < 2.0) {
+        return mix(yellow, deepOrange, t - 1.0);
+    } else if (t < 3.0) {
+        return mix(deepOrange, red, t - 2.0);
     } else {
-        return mix(hotOrange, yellowOrange, (glow - 0.5) * 2.0);
+        return mix(red, orange, t - 3.0);
     }
 }
 
@@ -98,17 +106,20 @@ vertex VertexOut spinner_vertex(
     float maxR  = spirographMaxRadius(cfg.loops, cfg.tinyLoopAmount, cfg.strokeWidth);
     float scale = 0.9 / maxR;
 
-    // Trail animation
+    // Trail animation — reversed so trail "draws" the flower
     float trailHead = fmod(cfg.time / 4.0, 1.0);
-    float dist      = fmod(progress - trailHead + 1.0, 1.0);
+    float dist      = fmod(trailHead - progress + 1.0, 1.0);
     bool  inTrail   = dist <= cfg.trailLength;
     float glow      = inTrail ? (1.0 - dist / cfg.trailLength) : 0.0;
 
-    // Rounded cap at the head only — tail fades out naturally via glow
+    // Smooth caps: rounded head + soft tail fade
     float capLen   = 0.012;
+    float tailLen  = 0.08;
     float capTaper = 1.0;
     if (inTrail) {
-        capTaper = smoothstep(0.0, capLen, dist);
+        float headTaper = smoothstep(0.0, capLen, dist);
+        float tailTaper = smoothstep(cfg.trailLength, cfg.trailLength - tailLen, dist);
+        capTaper = headTaper * tailTaper;
     }
 
     // Final position
@@ -132,7 +143,7 @@ vertex VertexOut spinner_vertex(
         } else if (cfg.colorMode == 1) {
             rgb = float3(1.0);
         } else if (cfg.colorMode == 3) {
-            rgb = saffronColor(glow);
+            rgb = saffronColor(progress, cfg.time);
         } else {
             rgb = cfg.customColor.rgb;
         }
