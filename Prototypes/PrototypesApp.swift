@@ -11,7 +11,13 @@ import SwiftUI
 struct PrototypesApp: App {
     var body: some Scene {
         WindowGroup {
-            TodoListView()
+            SpinnerView(config: {
+                var c = SpinnerConfig()
+                c.colorMode  = .rainbow
+                c.strokeWidth = 6
+                return c
+            }())
+            .frame(width: 100, height: 100)
         }
     }
 }

@@ -5,7 +5,6 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constant float PI  = 3.14159265358979323846;
 constant float PI2 = 6.28318530717958647692;
 
 // MARK: - Spirograph curve
